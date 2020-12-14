@@ -1,1 +1,6 @@
-- src: marcinpraczko.hello_world
+---
+roles:
+  - src: marcinpraczko.hello_world
+
+collections:
+  - name: ansible.posix

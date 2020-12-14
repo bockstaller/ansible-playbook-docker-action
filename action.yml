@@ -9,8 +9,11 @@ inputs:
   inventoryFile:
     description: 'Name of the inventory file to use.'
     required: false
-  requirementsFile:
-    description: 'name of the requirements file to use.'
+  rolesFile:
+    description: 'name of the requirements file for roles to use.'
+    required: false
+  collectionsFile:
+    description: 'name of the requirements file for collections to use.'
     required: false
   galaxyGithubUser:
     description: 'If you use private github repositories in your requirements file you need to set galaxyGithubUser and galaxyGithub token.'
@@ -42,7 +45,8 @@ runs:
   args:
     - ${{ inputs.playbookName }}
     - ${{ inputs.inventoryFile }}
-    - ${{ inputs.requirementsFile }}
+    - ${{ inputs.rolesFile }}
+    - ${{ inputs.collectionsFile }}
     - ${{ inputs.galaxyGithubUser }}
     - ${{ inputs.galaxyGithubToken }}
     - ${{ inputs.keyFile }}

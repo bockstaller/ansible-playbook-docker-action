@@ -50,12 +50,12 @@ else
 fi
 
 # Evaluate requirements.
-export REQUIREMENTS=
-if [ -z "$INPUT_REQUIREMENTSFILE" ]
+export ROLES=
+if [ -z "$INPUT_ROLESFILE" ]
 then
-  echo "\$INPUT_REQUIREMENTSFILE not set. Won't install any additional external roles."
+  echo "\$INPUT_ROLESFILE not set. Won't install any additional external roles."
 else
-  REQUIREMENTS=$INPUT_REQUIREMENTSFILE
+  ROLES=$INPUT_ROLESFILE
   export ROLES_PATH=
   if [ -z "$INPUT_ROLESPATH" ]
   then
@@ -64,15 +64,15 @@ else
     echo "\$INPUT_ROLESPATH is set. Will install roles to ${INPUT_ROLESPATH}."
     export ROLES_PATH=$INPUT_ROLESPATH
   fi
-  echo "\$INPUT_REQUIREMENTSFILE is set. Will use ${INPUT_REQUIREMENTSFILE} to install external roles."
+  echo "\$INPUT_ROLESFILE is set. Will use ${INPUT_ROLESFILE} to install external roles."
 
   if [ ! -z "$INPUT_GALAXYGITHUBTOKEN" ]
   then
     if [ ! -z "$INPUT_GALAXYGITHUBUSER" ]
     then
-      echo "\$INPUT_GALAXYGITHUBTOKEN and \$INPUT_GALAXYGITHUBUSER are set. Will substitue \$GALAXYGITHUBUSER and \$GALAXYGITHUBTOKEN in \$REQUIREMENTSFILE."
-      envsubst < ${INPUT_REQUIREMENTSFILE} > $(dirname "${INPUT_REQUIREMENTSFILE}")/substituted_requirements.yml
-      export REQUIREMENTS=$(dirname "${INPUT_REQUIREMENTSFILE}")/substituted_requirements.yml
+      echo "\$INPUT_GALAXYGITHUBTOKEN and \$INPUT_GALAXYGITHUBUSER are set. Will substitue \$GALAXYGITHUBUSER and \$GALAXYGITHUBTOKEN in \$ROLESFILE."
+      envsubst < ${INPUT_ROLESFILE} > $(dirname "${INPUT_ROLESFILE}")/substituted_requirements.yml
+      export ROLES=$(dirname "${INPUT_ROLESFILE}")/substituted_requirements.yml
     else
       echo "\$INPUT_GALAXYTOKEN is set. Will login to Ansible Galaxy."
       ansible-galaxy login --github-token ${INPUT_GALAXYGITHUBTOKEN} ${VERBOSITY}
@@ -81,9 +81,46 @@ else
     echo "\$INPUT_GALAXYGITHUBTOKEN not set. Won't do any authentication for roles installation."
   fi
 
-  ansible-galaxy install --force \
+  ansible-galaxy role install --force \
     --roles-path ${ROLES_PATH} \
-    -r ${REQUIREMENTS} \
+    -r ${ROLES} \
+    ${VERBOSITY}
+fi
+
+export COLLECTIONS=
+if [ -z "$INPUT_COLLECTIONSFILE" ]
+then
+  echo "\$INPUT_COLLECTIONSFILE not set. Won't install any additional external roles."
+else
+  COLLECTIONS=$INPUT_COLLECTIONSFILE
+  export ROLES_PATH=
+  if [ -z "$INPUT_ROLESPATH" ]
+  then
+    echo "\$INPUT_ROLESPATH not set. Will install roles in standard path."
+  else
+    echo "\$INPUT_ROLESPATH is set. Will install roles to ${INPUT_ROLESPATH}."
+    export ROLES_PATH=$INPUT_ROLESPATH
+  fi
+  echo "\$INPUT_COLLECTIONSFILE is set. Will use ${INPUT_COLLECTIONSFILE} to install external roles."
+
+  if [ ! -z "$INPUT_GALAXYGITHUBTOKEN" ]
+  then
+    if [ ! -z "$INPUT_GALAXYGITHUBUSER" ]
+    then
+      echo "\$INPUT_GALAXYGITHUBTOKEN and \$INPUT_GALAXYGITHUBUSER are set. Will substitue \$GALAXYGITHUBUSER and \$GALAXYGITHUBTOKEN in \$COLLECTIONSFILE."
+      envsubst < ${INPUT_COLLECTIONSFILE} > $(dirname "${INPUT_COLLECTIONSFILE}")/substituted_requirements.yml
+      export COLLECTIONS=$(dirname "${INPUT_COLLECTIONSFILE}")/substituted_requirements.yml
+    else
+      echo "\$INPUT_GALAXYTOKEN is set. Will login to Ansible Galaxy."
+      ansible-galaxy login --github-token ${INPUT_GALAXYGITHUBTOKEN} ${VERBOSITY}
+    fi
+  else
+    echo "\$INPUT_GALAXYGITHUBTOKEN not set. Won't do any authentication for roles installation."
+  fi
+
+  ansible-galaxy collection install --force \
+    --roles-path ${ROLES_PATH} \
+    -r ${COLLECTIONS} \
     ${VERBOSITY}
 fi
 
