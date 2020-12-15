@@ -93,15 +93,6 @@ then
   echo "\$INPUT_COLLECTIONSFILE not set. Won't install any additional external roles."
 else
   COLLECTIONS=$INPUT_COLLECTIONSFILE
-  export ROLES_PATH=
-  if [ -z "$INPUT_ROLESPATH" ]
-  then
-    echo "\$INPUT_ROLESPATH not set. Will install roles in standard path."
-  else
-    echo "\$INPUT_ROLESPATH is set. Will install roles to ${INPUT_ROLESPATH}."
-    export ROLES_PATH=$INPUT_ROLESPATH
-  fi
-  echo "\$INPUT_COLLECTIONSFILE is set. Will use ${INPUT_COLLECTIONSFILE} to install external roles."
 
   if [ ! -z "$INPUT_GALAXYGITHUBTOKEN" ]
   then
@@ -119,7 +110,6 @@ else
   fi
 
   ansible-galaxy collection install --force \
-    --roles-path ${ROLES_PATH} \
     -r ${COLLECTIONS} \
     ${VERBOSITY}
 fi
